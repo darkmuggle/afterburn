@@ -461,4 +461,9 @@ impl MetadataProvider for Azure {
             .dispatch_post()?;
         Ok(())
     }
+
+    fn daemon(&self) -> Result<()> {
+        warn!("daemon mode requested, but not supported on this platform");
+        Ok(())
+    }
 }

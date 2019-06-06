@@ -64,6 +64,7 @@ const CMDLINE_PATH: &str = "/proc/cmdline";
 struct Config {
     provider: String,
     attributes_file: Option<String>,
+    daemon: bool,
     check_in: bool,
     ssh_keys_user: Option<String>,
     hostname_file: Option<String>,
@@ -122,6 +123,13 @@ fn run() -> Result<()> {
             .chain_err(|| "checking-in instance boot to cloud provider")?;
     }
 
+    // for providers with daemon functionality,
+    if config.daemon {
+        metadata
+            .daemon()
+            .chain_err(|| "running in daemon mode")?;
+    }
+
     debug!("Done!");
 
     Ok(())
@@ -160,6 +168,11 @@ fn init() -> Result<Config> {
             Arg::with_name("check-in")
                 .long("check-in")
                 .help("Check-in this instance boot with the cloud provider"),
+        )
+        .arg(
+            Arg::with_name("daemon")
+                .long("daemon")
+                .help("On supported clouds, run as a daemon"),
         )
         .arg(
             Arg::with_name("cmdline")
@@ -209,5 +222,6 @@ fn init() -> Result<Config> {
         ssh_keys_user: matches.value_of("ssh-keys").map(String::from),
         hostname_file: matches.value_of("hostname").map(String::from),
         network_units_dir: matches.value_of("network-units").map(String::from),
+        daemon: matches.is_present("daemon"),
     })
 }

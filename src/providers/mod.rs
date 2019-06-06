@@ -172,6 +172,7 @@ pub trait MetadataProvider {
     fn networks(&self) -> Result<Vec<network::Interface>>;
     fn network_devices(&self) -> Result<Vec<network::Device>>;
     fn boot_checkin(&self) -> Result<()>;
+    fn daemon(&self) -> Result<()>;
 
     fn write_attributes(&self, attributes_file_path: String) -> Result<()> {
         let mut attributes_file = create_file(&attributes_file_path)?;

@@ -301,4 +301,9 @@ impl MetadataProvider for DigitalOceanProvider {
         warn!("boot check-in requested, but not supported on this platform");
         Ok(())
     }
+
+    fn daemon(&self) -> Result<()> {
+        warn!("daemon mode requested, but not supported on this platform");
+        Ok(())
+    }
 }

@@ -316,4 +316,9 @@ impl MetadataProvider for PacketProvider {
         client.post(retry::Json, url, None).dispatch_post()?;
         Ok(())
     }
+
+    fn daemon(&self) -> Result<()> {
+        warn!("daemon mode requested, but not supported on this platform");
+        Ok(())
+    }
 }
