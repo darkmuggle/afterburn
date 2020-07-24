@@ -32,6 +32,7 @@ pub mod exoscale;
 pub mod gcp;
 pub mod ibmcloud;
 pub mod ibmcloud_classic;
+pub mod noop;
 pub mod openstack;
 pub mod packet;
 #[cfg(feature = "cl-legacy")]
@@ -43,7 +44,7 @@ use crate::errors::*;
 use crate::network;
 use libsystemd::logging;
 use openssh_keys::PublicKey;
-use slog_scope::warn;
+use slog_scope::{crit,warn};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::prelude::*;
@@ -195,11 +196,25 @@ fn write_ssh_keys(user: User, ssh_keys: Vec<PublicKey>) -> Result<()> {
 }
 
 pub trait MetadataProvider {
-    fn attributes(&self) -> Result<HashMap<String, String>>;
-    fn hostname(&self) -> Result<Option<String>>;
-    fn ssh_keys(&self) -> Result<Vec<PublicKey>>;
-    fn networks(&self) -> Result<Vec<network::Interface>>;
-    fn boot_checkin(&self) -> Result<()>;
+    fn attributes(&self) -> Result<HashMap<String, String>> {
+        let attributes = maplit::hashmap! { };
+        Ok(attributes)
+    }
+
+    fn hostname(&self) -> Result<Option<String>> {
+        crit!("provider should implement this trait");
+        Ok(None)
+    }
+
+    fn ssh_keys(&self) -> Result<Vec<PublicKey>> {
+        crit!("provider should implement this trait");
+        Ok(vec![])
+    }
+
+    fn networks(&self) -> Result<Vec<network::Interface>> {
+        crit!("provider should implement this trait");
+        Ok(vec![])
+    }
 
     /// Return a list of virtual network devices for this machine.
     ///
@@ -207,7 +222,15 @@ pub trait MetadataProvider {
     /// configuration fragments.
     ///
     /// netdev: https://www.freedesktop.org/software/systemd/man/systemd.netdev.html
-    fn virtual_network_devices(&self) -> Result<Vec<network::VirtualNetDev>>;
+    fn virtual_network_devices(&self) -> Result<Vec<network::VirtualNetDev>> {
+        crit!("provider should implement this trait");
+        Ok(vec![])
+    }
+
+    fn boot_checkin(&self) -> Result<()> {
+        crit!("provider should implement this trait");
+        Ok(())
+    }
 
     /// Return custom initrd network kernel arguments, if any.
     fn rd_network_kargs(&self) -> Result<Option<String>> {

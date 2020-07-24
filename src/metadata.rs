@@ -24,6 +24,7 @@ use crate::providers::exoscale::ExoscaleProvider;
 use crate::providers::gcp::GcpProvider;
 use crate::providers::ibmcloud::IBMGen2Provider;
 use crate::providers::ibmcloud_classic::IBMClassicProvider;
+use crate::providers::noop::Noop;
 use crate::providers::openstack::network::OpenstackProvider;
 use crate::providers::packet::PacketProvider;
 #[cfg(feature = "cl-legacy")]
@@ -48,6 +49,7 @@ pub fn fetch_metadata(provider: &str) -> errors::Result<Box<dyn providers::Metad
         #[cfg(not(feature = "cl-legacy"))]
         "aws" => box_result!(AwsProvider::try_new()?),
         "azure" => box_result!(Azure::try_new()?),
+        "azurestack" => box_result!(Noop::new()),
         "cloudstack-metadata" => box_result!(CloudstackNetwork::try_new()?),
         "cloudstack-configdrive" => box_result!(ConfigDrive::try_new()?),
         "digitalocean" => box_result!(DigitalOceanProvider::try_new()?),
@@ -62,6 +64,7 @@ pub fn fetch_metadata(provider: &str) -> errors::Result<Box<dyn providers::Metad
         "ibmcloud" => box_result!(IBMGen2Provider::try_new()?),
         // IBM Cloud - Classic infrastructure.
         "ibmcloud-classic" => box_result!(IBMClassicProvider::try_new()?),
+        "noop" => box_result!(Noop::new()),
         "openstack-metadata" => box_result!(OpenstackProvider::try_new()?),
         "packet" => box_result!(PacketProvider::try_new()?),
         #[cfg(feature = "cl-legacy")]
